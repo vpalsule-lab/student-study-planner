@@ -1,3 +1,16 @@
+set_website_title("Student Study Planner")
+set_site_information(
+    author="Vineet Palsule",
+    description="Allows college students to organize and plan their assignments.",
+    sources="Thanks to the Drafter docs and LLM.",
+    planning=["CS1 Final Project 0_ Pick a Problem (1).pdf", "CS1 Final Project 1_ Design.pdf"],
+    links=["https://github.com/vpalsule-lab/student-study-planner"]
+)
+hide_debug_information()
+set_website_framed(False)
+
+
+
 from drafter import *
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -20,7 +33,11 @@ COURSE_OPTIONS = [
 
 @dataclass
 class Assignment:
-    """Store the information for one school assignment."""
+    """
+    This dataclass stores the information for one school assignment.
+    It takes the name, course, due date, estimated time to complete, and if the assignment
+    is completed or not.
+    """
     name: str
     course: str
     due_date: str
@@ -30,7 +47,9 @@ class Assignment:
 
 @dataclass
 class State:
-    """Store information that must be available across the website."""
+    """
+    This dataclass stores information that must be available across the website.
+    """
     assignments: list[Assignment]
     student_name: str
     selected_course: str
@@ -41,7 +60,11 @@ class State:
 # Helper functions
 
 def assignment_description(assignment: Assignment) -> str:
-    """Return a readable description of one assignment."""
+    """
+    This function returns the assignment description.
+    It gives the completed status if the assignment is completed
+    and returns the assignment with its details and its completion status.
+    """
     if assignment.completed:
         status = "Completed"
     else:
@@ -56,7 +79,10 @@ def assignment_description(assignment: Assignment) -> str:
 
 
 def valid_date(date_text: str) -> bool:
-    """Check that a date is written in MM-DD-YYYY format."""
+    """
+    This function checks that a date is written in the MM-DD-YYYY format.
+    It returns false if it isn't in the right format.
+    """
     try:
         datetime.strptime(date_text, "%m-%d-%Y").date()
         return True
@@ -65,7 +91,11 @@ def valid_date(date_text: str) -> bool:
 
 
 def is_upcoming(assignment: Assignment) -> bool:
-    """Return True for unfinished assignments due in the next 7 days."""
+    """
+    This funciton returs true for unfinished assignments due in the next 7 days.
+    It takes the timedelta function and if it is within 7 days of the due date,
+    it will go into the website as upcoming.
+    """
     today = date.today()
     last_day = today + timedelta(days=7)
 
@@ -80,7 +110,11 @@ def is_upcoming(assignment: Assignment) -> bool:
 
 
 def is_overdue(assignment: Assignment) -> bool:
-    """Return True for unfinished assignments with a past due date."""
+    """
+    This function returs true for unfinished assignments with a past due date.
+    If the assignment is not completed and the current date is past the due date,
+    then it will go into the website as overdue.
+    """
     if assignment.completed:
         return False
 
@@ -92,7 +126,12 @@ def is_overdue(assignment: Assignment) -> bool:
 
 
 def remaining_hours(state: State) -> float:
-    """Add the estimated hours for all unfinished assignments."""
+    """
+    This function adds the estimated hours for all unfinished assignments.
+    It starts with a total of 0.0 hours and adds the estimated hours to complete
+    to the total variable and returns the total remaining time needed
+    for all the unfinished assignments.
+    """
     total = 0.0
 
     for assignment in state.assignments:
@@ -107,7 +146,9 @@ def remaining_hours(state: State) -> float:
 
 @route
 def index(state: State) -> Page:
-    """Show the homepage and links to the planner pages."""
+    """
+    This route shows the homepage and links to the planner pages.
+    """
     content = [
         Header("Student Study Planner"),
         "Welcome, " + state.student_name + "!",
@@ -134,7 +175,10 @@ def index(state: State) -> Page:
 
 @route
 def save_student_name(state: State, new_name: str) -> Page:
-    """Update the student's name."""
+    """
+    This route updates the student's name.
+    It takes the input from the state.student_name and updates the name.
+    """
     if new_name.strip() != "":
         state.student_name = new_name.strip()
         state.status_message = "Your name was updated."
@@ -149,7 +193,11 @@ def save_student_name(state: State, new_name: str) -> Page:
 
 @route
 def add_assignment_page(state: State) -> Page:
-    """Show the form used to enter a new assignment."""
+    """
+    This route shows the form used to enter a new assignment.
+    It contains all the information for the assignment, such as
+    name, course, due date, and estimated time to complete.
+    """
     content = [
         Header("Add an Assignment"),
         "Assignment name:",
@@ -177,7 +225,10 @@ def submit_assignment(
     due_date: str,
     estimated_hours: str
 ) -> Page:
-    """Check the form information and add an assignment."""
+    """
+    This route checks if the assignment information is correct.
+    If everything is correct, then it will add the assignment to the list.
+    """
     if assignment_name.strip() == "":
         state.status_message = "Enter an assignment name."
     elif course not in COURSE_OPTIONS:
@@ -211,7 +262,11 @@ def submit_assignment(
 
 @route
 def view_assignments(state: State) -> Page:
-    """Show every assignment and completion buttons for unfinished work."""
+    """
+    This route shows every assignment and completion buttons for unfinished work.
+    The student can see all the assignments can allows them to see what is completed
+    or incomplete.
+    """
     content = [Header("All Assignments")]
 
     if len(state.assignments) == 0:
@@ -245,7 +300,11 @@ def view_assignments(state: State) -> Page:
 
 @route
 def complete_assignment(state: State, assignment_index: int) -> Page:
-    """Mark the selected assignment complete and update the count."""
+    """
+    This route finds the assignment by marking the selected assignment
+    and marks it as finished. It will update the count of
+    completed assignments.
+    """
     if 0 <= assignment_index < len(state.assignments):
         assignment = state.assignments[assignment_index]
 
@@ -269,7 +328,10 @@ def complete_assignment(state: State, assignment_index: int) -> Page:
 
 @route
 def upcoming_deadlines(state: State) -> Page:
-    """Show unfinished assignments due soon and assignments past due."""
+    """
+    This route shows unfinished assignments that are due soon
+    and assignments that are past the due date.
+    """
     content = [
         Header("Upcoming Deadlines"),
         "Unfinished assignments due within the next 7 days:"
@@ -308,7 +370,10 @@ def upcoming_deadlines(state: State) -> Page:
 
 @route
 def filter_assignments(state: State) -> Page:
-    """Show a menu for selecting a course."""
+    """
+    This route shows a select box so a student can select the
+    course they want.
+    """
     content = [
         Header("Filter Assignments by Course"),
         "Choose a course to view:",
@@ -329,7 +394,10 @@ def filter_assignments(state: State) -> Page:
 
 @route
 def choose_course(state: State, course_choice: str) -> Page:
-    """Save the selected course and show its assignments."""
+    """
+    This route saves the selected course the student picked
+    and show its assignments.
+    """
     valid_choices = ["All Courses"] + COURSE_OPTIONS
 
     if course_choice in valid_choices:
@@ -347,7 +415,9 @@ def choose_course(state: State, course_choice: str) -> Page:
 
 @route
 def filtered_assignments(state: State) -> Page:
-    """Display assignments matching the selected course."""
+    """
+    This route displays assignments only from the selected course.
+    """
     content = [
         Header("Filtered Assignments"),
         "Selected course: " + state.selected_course
@@ -387,7 +457,10 @@ def filtered_assignments(state: State) -> Page:
 
 @route
 def completed_assignments(state: State) -> Page:
-    """Show assignments that have been marked completed."""
+    """
+    This route shows all the assignments that
+    the student has finished.
+    """
     content = [Header("Completed Assignments")]
     found_assignment = False
 
