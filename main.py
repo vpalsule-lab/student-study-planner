@@ -3,7 +3,9 @@ set_site_information(
     author="Vineet Palsule",
     description="Allows college students to organize and plan their assignments.",
     sources="Thanks to the Drafter docs and LLM.",
-    planning=["CS1 Final Project 0_ Pick a Problem (1).pdf", "CS1 Final Project 1_ Design.pdf"],
+    planning=["CS1 Final Project 0_ Pick a Problem (1).pdf", 
+              "CS1 Final Project 1_ Design.pdf",
+             "CISC Final Project LLM Link.pdf"],
     links=["https://github.com/vpalsule-lab/student-study-planner"]
 )
 hide_debug_information()
