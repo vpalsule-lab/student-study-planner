@@ -1,3 +1,9 @@
+from drafter import *
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
+from bakery import assert_equal
+
+
 set_website_title("Student Study Planner")
 set_site_information(
     author="Vineet Palsule",
@@ -11,12 +17,6 @@ set_site_information(
 hide_debug_information()
 set_website_framed(False)
 
-
-
-from drafter import *
-from dataclasses import dataclass
-from datetime import date, datetime, timedelta
-from bakery import assert_equal
 
 
 # Different course options
